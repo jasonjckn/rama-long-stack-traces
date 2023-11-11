@@ -20,13 +20,8 @@
       (+compound $$word->count {*word (r.aggs/+count)} )
       (printf "'%s', " *word))))
 
-
-(comment
-
+(defn -main [& args ]
   (defonce ipc (r.test/create-ipc))
-  )
-
-(do
   (try
     (r.test/destroy-module! ipc (get-module-name MyModule))
     (catch Exception _))
@@ -38,11 +33,8 @@
   (def $$word->count (foreign-pstate ipc (get-module-name MyModule) "$$word->count"))
 
 
-
-
-
   (println "\n--------------------------")
-  (doseq [w ["a" "a" "a" "b" "c"]]
+  (doseq [w [:a :a :a :b :c]]
     (foreign-append! depot w))
 
   (pr (foreign-select :a $$word->count))
@@ -51,4 +43,34 @@
 
 
 
+
   )
+
+#_ (defonce ipc (r.test/create-ipc))
+
+#_ (do
+     (try
+       (r.test/destroy-module! ipc (get-module-name MyModule))
+       (catch Exception _))
+
+
+     (r.test/launch-module! ipc MyModule {:tasks 2 :threads 2})
+     (def depot (foreign-depot ipc (get-module-name MyModule) "*depot"))
+
+     (def $$word->count (foreign-pstate ipc (get-module-name MyModule) "$$word->count"))
+
+
+
+
+
+     (println "\n--------------------------")
+     (doseq [w [:a :a :a :b :c]]
+       (foreign-append! depot w))
+
+     (pr (foreign-select :a $$word->count))
+
+
+
+
+
+     )
