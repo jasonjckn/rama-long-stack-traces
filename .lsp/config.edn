@@ -1,0 +1,21 @@
+
+;;
+;;
+;; LSP Config EDN
+;; -----------------------------------------------------------------------------------------------------------
+
+
+;; -----------------------------------------------------------------------------------------------------------
+;;   References:
+;;      - https://clojure-lsp.io/settings/
+;;
+{;;:source-aliases              #{:dev :test :build :+repl}
+ ;;
+ :auto-add-ns-to-new-files?   false
+ :keep-parens-when-threading? true
+ :copy-kondo-configs?         true
+ :semantic-tokens?            false
+ :completion                  {:analysis-type :slow-but-accurate}
+ :java                        {:download-jdk-source? true}
+ ;; :stubs                       {:generation {:namespaces #{"datomic.api"}}}
+ }
