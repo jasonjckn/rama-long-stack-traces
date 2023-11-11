@@ -13,23 +13,42 @@
     (declare-pstate s $$word->count {String Long})
 
     (<<sources s
-      (source> *depot :> *out)
-      (println *out))))
+      (source> *depot :> *sentence)
+      (str/split *sentence #"\s+" :> *words)
+      (r.ops/explode *words :> *word)
+      (|hash *word)
+      (+compound $$word->count {*word (r.aggs/+count)} )
+      (printf "'%s', " *word))))
 
 
 (comment
 
   (defonce ipc (r.test/create-ipc))
-  (do
-    (try
-      (r.test/destroy-module! ipc (get-module-name MyModule))
-      (catch Exception _))
+  )
+
+(do
+  (try
+    (r.test/destroy-module! ipc (get-module-name MyModule))
+    (catch Exception _))
 
 
-    (r.test/launch-module! ipc MyModule {:tasks 2 :threads 2})
-    (def depot (foreign-depot ipc (get-module-name MyModule) "*depot"))
+  (r.test/launch-module! ipc MyModule {:tasks 2 :threads 2})
+  (def depot (foreign-depot ipc (get-module-name MyModule) "*depot"))
 
-    (doseq [_ (range 10)]
-      (foreign-append! depot "hello"))
+  (def $$word->count (foreign-pstate ipc (get-module-name MyModule) "$$word->count"))
 
-    ))
+
+
+
+
+  (println "\n--------------------------")
+  (doseq [w ["a" "a" "a" "b" "c"]]
+    (foreign-append! depot w))
+
+  (pr (foreign-select :a $$word->count))
+
+
+
+
+
+  )
